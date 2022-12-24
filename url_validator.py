@@ -15,6 +15,7 @@ import pandas as pd
 from tqdm import tqdm
 from threading import Thread, local
 from requests.sessions import Session
+from multiprocessing import cpu_count
 from concurrent.futures import ThreadPoolExecutor
 
 warnings.filterwarnings('ignore')
@@ -61,9 +62,18 @@ def validate_all(urls:list, no_of_workers:int) -> dict:
 if __name__ == "__main__":
     data = pd.read_csv('url_data.csv').head(500)
     url_list = data.PERMALINK.tolist()
+    n_cores = cpu_count()
+    
+    # Trigerring the validation process
     start = time.time()
-    results = validate_all(url_list, 4)
-    print(len(results))
-    print(results[0])
+    results = validate_all(url_list, 2*n_cores)
     end = time.time()
-    print(f'{len(url_list)} links are validated in {end - start} seconds')
+    
+    # Summarizing the validation process
+    print(f'{len(results)} links are validated in {end - start} seconds')
+    active_url_list = [result['active_links'][0] for result in results if len(result['active_links'])>0]
+    inactive_url_links = [result['inactive_links'][0] for result in results if len(result['inactive_links'])>0]
+    unreachable_url_links = [result['unreachable_links'][0] for result in results if len(result['unreachable_links'])>0]
+    print(f'{len(active_url_list)} links are active')
+    print(f'{len(inactive_url_links)} links are inactive')
+    print(f'{len(unreachable_url_links)} links are not reachable / working')
