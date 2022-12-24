@@ -28,6 +28,15 @@ def get_session() -> Session:
     return thread_local.session
 
 def validate_link(url:str) -> dict:
+    """
+    This process validates each url link and categories whether its active, inactive or not reacheable
+    
+    args: 
+    - url (str): url link to validate
+    
+    return: 
+    - dict: categorization dictionary for the url link under validaton
+    """
     active_links, inactive_links, unreachable_links = [], [], []
     session = get_session()
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'}
@@ -55,6 +64,16 @@ def validate_link(url:str) -> dict:
     }
 
 def validate_all(urls:list, no_of_workers:int) -> dict:
+    """
+    This process fires the concurrent url validation process
+    
+    args: 
+    - urls (list, str): list of urls to validate
+    - no_of_workers (int): no of concurrent workers to run the validation process
+
+    return: 
+    - list: list of categorization dictionaries for all urls in the url list provided
+    """
     with ThreadPoolExecutor(max_workers=no_of_workers) as executor:
         results = list(tqdm(executor.map(validate_link, urls), total=len(urls)))
     return results
