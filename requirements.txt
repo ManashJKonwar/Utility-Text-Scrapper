@@ -1,0 +1,5 @@
+# Generic Libraries
+# ------------------------------------------------------------------------------
+requests==2.28.1  # https://pypi.org/project/requests/2.28.1/  # Python HTTP for Humans
+pandas==1.5.2  # https://pypi.org/project/pandas/1.5.2/  # Powerful data structures for data analysis, time series, and statistics
+tqdm==4.64.1  # https://pypi.org/project/tqdm/4.64.1/  # Fast, Extensible Progress Meter
