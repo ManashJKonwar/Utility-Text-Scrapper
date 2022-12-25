@@ -61,3 +61,26 @@ The prime objective of this repository is to facilitate the extraction of texts 
 - python3 -m venv scrappingVenv (Create virtual environment from existing python3)
 - activate the "scrappingVenv" (Activating the virtual environment)
 - pip install -r requirements.txt (Install all required python modules)
+
+## **Usage**
+
+## **Project Status**
+Project is: __in progress_ 
+
+## **Room for Improvement**
+
+## **References**
+[1] XXX - [Paper Link]()  
+[2] YYY - [Paper Link]()
+
+## **Acknowledgements**
+- ZZZ - [Link]().
+
+## **Contact**
+Created by [@ManashJKonwar](https://github.com/ManashJKonwar) - feel free to contact me!
+
+<!-- Optional -->
+<!-- ## License -->
+<!-- This project is open source and available under the [... License](). -->
+
+<!-- You don't have to include all sections - just the one's relevant to your project -->
