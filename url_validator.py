@@ -29,7 +29,7 @@ def get_session() -> Session:
 
 def validate_link(url:str) -> dict:
     """
-    This process validates each url link and categories whether its active, inactive or not reacheable
+    This function validates each url link and categories whether its active, inactive or not reacheable
     
     args: 
     - url (str): url link to validate
@@ -65,7 +65,7 @@ def validate_link(url:str) -> dict:
 
 def validate_all(urls:list, no_of_workers:int) -> dict:
     """
-    This process fires the concurrent url validation process
+    This function fires the concurrent url validation process
     
     args: 
     - urls (list, str): list of urls to validate
