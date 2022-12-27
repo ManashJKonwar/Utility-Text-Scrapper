@@ -7,13 +7,18 @@ __maintainer__ = "konwar.m"
 __email__ = "rickykonwar@gmail.com"
 __status__ = "Development"
 
+import os
+import time
 import json
 import requests
 import trafilatura
 import numpy as np
 
+from tqdm import tqdm
 from bs4 import BeautifulSoup
 from requests.models import MissingSchema
+from multiprocessing import cpu_count
+from concurrent.futures import ThreadPoolExecutor
 
 def bs_extract_text(response_content):
     """
@@ -67,6 +72,7 @@ def extract_text(url):
 
     return: 
     - cleaned_text (str): extracted text 
+    - 
     """
     downloaded_url = trafilatura.fetch_url(url)
     try:
@@ -78,24 +84,72 @@ def extract_text(url):
 
     if a:
         json_output = json.loads(a)
-        return json_output['text']
+        return {
+            'text': json_output['text'],
+            'title': json_output['title'],
+            'author': json_output['author'],
+            'hostname': json_output['hostname'],
+            'date': json_output['date'],
+            'categories': json_output['categories']
+        }
     else:
         try:
-            resp = requests.get(url, timeout=120)
+            resp = requests.get(url, timeout=10, verify=False)
             # We will only extract the text from successful requests:
             if resp.status_code == 200:
-                return bs_extract_text(resp.content)
+                return {
+                    'text': bs_extract_text(resp.content),
+                    'title': np.nan,
+                    'author': np.nan,
+                    'hostname': np.nan,
+                    'date': np.nan,
+                    'categories': np.nan
+                }
             else:
                 # This line will handle for any failures in both the Trafilature and BeautifulSoup4 functions:
-                return np.nan
+                return {
+                    'text': np.nan,
+                    'title': np.nan,
+                    'author': np.nan,
+                    'hostname': np.nan,
+                    'date': np.nan,
+                    'categories': np.nan
+                }
         # Handling for any URLs that don't have the correct protocol
         except MissingSchema:
             return np.nan
 
+def scrap_all(urls:list, no_of_workers:int) -> dict:
+    """
+    This function fires the concurrent url validation process
+    
+    args: 
+    - urls (list, str): list of urls to validate
+    - no_of_workers (int): no of concurrent workers to run the validation process
+
+    return: 
+    - list: list of categorization dictionaries for all urls in the url list provided
+    """
+    with ThreadPoolExecutor(max_workers=no_of_workers) as executor:
+        results = list(tqdm(executor.map(extract_text, urls), total=len(urls)))
+    return results
+
 if __name__ == "__main__":
-    url_list = [
-        'https://en.wikipedia.org/wiki/Virat_Kohli', 
-        'https://www.flipkart.com/apple-iphone-14-pro-max-space-black-256-gb/p/itm8a92b3d600e04?pid=MOBGHWFHSEZUKWDM&lid=LSTMOBGHWFHSEZUKWDM1LFARE&marketplace=FLIPKART&sattr[]=color&sattr[]=storage&st=storage'
-    ]
-    for url in url_list:
-        print(extract_text(url))
+    # url_list = [
+    #     'https://en.wikipedia.org/wiki/Virat_Kohli', 
+    #     'https://www.flipkart.com/apple-iphone-14-pro-max-space-black-256-gb/p/itm8a92b3d600e04?pid=MOBGHWFHSEZUKWDM&lid=LSTMOBGHWFHSEZUKWDM1LFARE&marketplace=FLIPKART&sattr[]=color&sattr[]=storage&st=storage'
+    # ]
+    
+    with open(os.path.join('data', 'urls.json'), 'rb') as ip_urls:
+        url_list = json.load(ip_urls)
+    n_cores = cpu_count()
+
+    # Trigerring the scrapping process
+    start = time.time()
+    results = scrap_all(url_list, 2*n_cores)
+    # for url in url_list:
+    #     extract_text(url)
+    end = time.time()
+
+    # Summarizing the scrapping process
+    print(f'{len(results)} links are scrapped in {end - start} seconds')
