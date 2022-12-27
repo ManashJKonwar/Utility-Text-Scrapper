@@ -85,6 +85,7 @@ def extract_text(url):
     if a:
         json_output = json.loads(a)
         return {
+            'url': url,
             'text': json_output['text'],
             'title': json_output['title'],
             'author': json_output['author'],
@@ -98,6 +99,7 @@ def extract_text(url):
             # We will only extract the text from successful requests:
             if resp.status_code == 200:
                 return {
+                    'url': url,
                     'text': bs_extract_text(resp.content),
                     'title': np.nan,
                     'author': np.nan,
@@ -108,6 +110,7 @@ def extract_text(url):
             else:
                 # This line will handle for any failures in both the Trafilature and BeautifulSoup4 functions:
                 return {
+                    'url': url,
                     'text': np.nan,
                     'title': np.nan,
                     'author': np.nan,
