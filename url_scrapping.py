@@ -95,7 +95,7 @@ def extract_text(url):
         }
     else:
         try:
-            resp = requests.get(url, timeout=10, verify=False)
+            resp = requests.get(url, timeout=120, verify=False)
             # We will only extract the text from successful requests:
             if resp.status_code == 200:
                 return {
@@ -120,7 +120,15 @@ def extract_text(url):
                 }
         # Handling for any URLs that don't have the correct protocol
         except MissingSchema:
-            return np.nan
+            return {
+                    'url': url,
+                    'text': np.nan,
+                    'title': np.nan,
+                    'author': np.nan,
+                    'hostname': np.nan,
+                    'date': np.nan,
+                    'categories': np.nan
+                }
 
 def scrap_all(urls:list, no_of_workers:int) -> dict:
     """
