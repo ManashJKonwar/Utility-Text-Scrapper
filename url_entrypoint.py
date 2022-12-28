@@ -17,6 +17,18 @@ from url_scrapping import scrap_all
 
 class URLValidator:
     def __init__(self, url_list, no_of_workers=2*cpu_count()):
+        """
+        This is the url validator class which is intended to use multithreaded
+        concurrent process to validate multiple urls at the same time. The validation rule 
+        segregates urls into 3 categories - active urls, inactive urls and not working urls.
+
+        args:
+        - url_list (list, str): urls to be validated
+        - no_of_workers (int): no of concurrent workers to be sued for validation
+
+        return:
+        - None
+        """
         self._url_list = url_list
         self._no_of_workers = no_of_workers
         self._active_urls = []
@@ -36,6 +48,15 @@ class URLValidator:
         return self._unreachable_urls
 
     def run_validation(self):
+        """
+        This method is responsible for running the validation of urls
+
+        args:
+        - None
+
+        return:
+        - None
+        """
         results = validate_all(
                         urls=self._url_list, 
                         no_of_workers=self._no_of_workers
@@ -48,6 +69,19 @@ class URLValidator:
 
 class URLScrapper:
     def __init__(self, url_list, no_of_workers=2*cpu_count()):
+        """
+        This is the url scrapping class which is intended to use multithreaded
+        concurrent process to scrap textual content from multiple urls at the same time. 
+        The scrapping process also extracts important metadata about the url that it is scrapping like
+        author, hostname, title, etc.
+
+        args:
+        - url_list (list, str): urls to be validated
+        - no_of_workers (int): no of concurrent workers to be sued for validation
+
+        return:
+        - None
+        """
         self._url_list = url_list
         self._no_of_workers = no_of_workers
         self._metadata_cols = ['url_id', 'url', 'text', 'title', 'author', 'hostname', 'date', 'categories']
@@ -58,6 +92,15 @@ class URLScrapper:
         return self._scrapped_df
 
     def run_scrapping(self):
+        """
+        This method is responsible for running the scrapping of urls
+
+        args:
+        - None
+
+        return:
+        - None
+        """
         results = scrap_all(
                         urls=self._url_list, 
                         no_of_workers=self._no_of_workers
