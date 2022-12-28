@@ -7,6 +7,7 @@ __maintainer__ = "konwar.m"
 __email__ = "rickykonwar@gmail.com"
 __status__ = "Development"
 
+import os
 import time
 import pandas as pd
 
@@ -108,12 +109,13 @@ class URLScrapper:
 
         results_df = pd.DataFrame(results)
         results_df['url_id'] = range(len(results_df))
+        results_df = results_df[['url_id']+list(results_df.columns)[:-1]]
 
         self._scrapped_df = results_df.copy()
 
 if __name__ == "__main__":
-    data = pd.read_csv('url_data.csv').head(500)
-    url_list = data.PERMALINK.tolist()
+    data = pd.read_csv(os.path.join('data', 'url_data.csv')).head(500)
+    url_list = data.URLS.tolist()
     n_cores = cpu_count()
 
     # Trigerring the validation process
